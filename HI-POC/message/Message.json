@@ -1,0 +1,346 @@
+{
+  "message": {
+    "name": "Message",
+    "class": "com.mocomsys.message.Message",
+    "desc": "Socket Message Definition",
+    "length": {
+      "header": "com.mocomsys.message.Header",
+      "field": "STND_TLG_LEN",
+      "include": "false",
+      "byteType": "false",
+      "use": "true"
+    },
+    "header": {
+      "name": "Header",
+      "class": "com.mocomsys.message.Header",
+      "fieldCount": "34",
+      "offset": "0",
+      "length": "512",
+      "memoryFileUse": "false",
+      "bufferName": "SysHeaderBuffer",
+      "desc": "요청전문 시스템헤더 정의",
+      "field": [
+        {
+          "name": "STND_TLG_LEN",
+          "offset": "0",
+          "length": "8",
+          "type": "N",
+          "notnull": "false",
+          "default": "00000000",
+          "desc": "표준전문길이                            "
+        },
+        {
+          "name": "ENC_DST_CD",
+          "offset": "8",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "0",
+          "domain": "{0,1,2,3,4,5,6}",
+          "desc": "전문암호화구분코드                      "
+        },
+        {
+          "name": "TLG_DRP_DT",
+          "offset": "9",
+          "length": "8",
+          "type": "C",
+          "notnull": "false",
+          "default": "{sysdate}",
+          "format": "yyyyMMdd",
+          "desc": "글러벌ID번호(전문작성일자    )          "
+        },
+        {
+          "name": "STND_CRTN_SYS_NM",
+          "offset": "17",
+          "length": "8",
+          "type": "C",
+          "notnull": "false",
+          "desc": "글러벌ID번호(전문생성시스템명          )"
+        },
+        {
+          "name": "STND_TLG_SNO",
+          "offset": "25",
+          "length": "14",
+          "type": "N",
+          "notnull": "false",
+          "desc": "글러벌ID번호(표준전문번호              )"
+        },
+        {
+          "name": "STND_TLG_PGRS_NO",
+          "offset": "39",
+          "length": "2",
+          "type": "N",
+          "notnull": "false",
+          "desc": "글러벌ID번호(표준전문진행번호          )"
+        },
+        {
+          "name": "TLG_IP",
+          "offset": "41",
+          "length": "15",
+          "type": "C",
+          "notnull": "false",
+          "desc": "최초전송시스템정보내용(전문IP          )"
+        },
+        {
+          "name": "TLG_MAC_ADR",
+          "offset": "56",
+          "length": "12",
+          "type": "C",
+          "notnull": "false",
+          "desc": "최초전송시스템정보내용(전문MAC주소     )"
+        },
+        {
+          "name": "ENV_INF_DST_CD",
+          "offset": "68",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "D",
+          "domain": "{D,T,R}",
+          "desc": "최초전송시스템정보내용(환경정보구분코드)"
+        },
+        {
+          "name": "FRS_FRW_SYS_CD",
+          "offset": "69",
+          "length": "3",
+          "type": "C",
+          "notnull": "false",
+          "desc": "전송시스템정보내용(최초전송시스템코드  )"
+        },
+        {
+          "name": "FRW_SYS_CD",
+          "offset": "72",
+          "length": "3",
+          "type": "C",
+          "notnull": "false",
+          "desc": "전송시스템정보내용(전송시스템코드      )"
+        },
+        {
+          "name": "FRW_NOD_NO",
+          "offset": "75",
+          "length": "4",
+          "type": "N",
+          "notnull": "false",
+          "desc": "전송시스템정보내용(전송노드번호        )"
+        },
+        {
+          "name": "XA_TR_DST_CD",
+          "offset": "79",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "0",
+          "domain": "{0,1}",
+          "desc": "전문처리정보내용(XA거래구분코드        )"
+        },
+        {
+          "name": "RQS_RSPD_DST_CD",
+          "offset": "159",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "S",
+          "domain": "(S,R)",
+          "desc": "전문처리정보내용(요청응답구분코드      )"
+        },
+        {
+          "name": "TR_SYNC_DST_CD",
+          "offset": "158",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "S",
+          "domain": "{S,A}",
+          "desc": "전문처리정보내용(거래동기화구분코드    )"
+        },
+        {
+          "name": "TLG_RQS_DTTM",
+          "offset": "82",
+          "length": "17",
+          "type": "C",
+          "notnull": "false",
+          "default": "{sysdate}",
+          "format": "yyyyMMddHHmmssSSS",
+          "desc": "전문처리정보내용(전무요청일시          )"
+        },
+        {
+          "name": "TTL_US_DST_CD",
+          "offset": "99",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "0",
+          "domain": "{0,1}",
+          "desc": "TTL정보내용(TTL사용구분코드            )"
+        },
+        {
+          "name": "FRS_ST_TM",
+          "offset": "100",
+          "length": "6",
+          "type": "C",
+          "notnull": "false",
+          "default": "{sysdate}",
+          "format": "hhmmss",
+          "desc": "TTL정보내용(최초시작시각               )"
+        },
+        {
+          "name": "MNT_HR_SCNT",
+          "offset": "106",
+          "length": "3",
+          "type": "N",
+          "notnull": "false",
+          "default": "000",
+          "desc": "TTL정보내용(유지시간초수               )"
+        },
+        {
+          "name": "RCV_SVC_CD",
+          "offset": "109",
+          "length": "12",
+          "type": "C",
+          "notnull": "false",
+          "desc": "서비스코드정보내용(수신서비스코드      )"
+        },
+        {
+          "name": "RSLT_SVC_CD",
+          "offset": "121",
+          "length": "12",
+          "type": "C",
+          "notnull": "false",
+          "desc": "서비스코드정보내용(결과수신서비스코드  )"
+        },
+        {
+          "name": "OSD_MCI_INTF_ID",
+          "offset": "133",
+          "length": "16",
+          "type": "C",
+          "notnull": "false",
+          "desc": "서비스코드정보내용(대외MCI인터페이스ID )"
+        },
+        {
+          "name": "EAI_INTF_ID",
+          "offset": "145",
+          "length": "12",
+          "type": "C",
+          "notnull": "false",
+          "desc": "서비스코드정보내용(EAI인터페이스ID     )"
+        },
+        {
+          "name": "TLG_RSPD_DTTM",
+          "offset": "187",
+          "length": "17",
+          "type": "C",
+          "notnull": "false",
+          "default": "{sysdate}",
+          "format": "yyyyMMddHHmmssSSS",
+          "desc": "응답결과정보내용(전문응답일시          )"
+        },
+        {
+          "name": "RSPD_PRCS_RSLT_DST_CD",
+          "offset": "178",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "0",
+          "domain": "{0,1,8,9}",
+          "desc": "응답결과정보내용(응답처리결과구분코드  )"
+        },
+        {
+          "name": "POUT_TLG_TYP_CD",
+          "offset": "179",
+          "length": "1",
+          "type": "C",
+          "notnull": "false",
+          "default": "1",
+          "domain": "{1,2,3,4,5,6,9,M,n}",
+          "desc": "응답결과정보내용(출력전문유형코드      )"
+        },
+        {
+          "name": "TLG_CNTY_SEQ_NO",
+          "offset": "180",
+          "length": "3",
+          "type": "N",
+          "notnull": "false",
+          "desc": "응답결과정보내용(전문연속일련번호      )"
+        },
+        {
+          "name": "OBS_SYS_CD",
+          "offset": "183",
+          "length": "3",
+          "type": "C",
+          "notnull": "false",
+          "desc": "장애정보내용(장애시스템코드            )"
+        },
+        {
+          "name": "STND_TLG_ERR_CD",
+          "offset": "186",
+          "length": "10",
+          "type": "C",
+          "notnull": "false",
+          "desc": "장애정보내용(표준전문오류코드          )"
+        },
+        {
+          "name": "TLG_VRS",
+          "offset": "196",
+          "length": "3",
+          "type": "C",
+          "notnull": "false",
+          "desc": "기타정보내용(전문버전                  )"
+        },
+        {
+          "name": "TLG_LNGG_DST_CD",
+          "offset": "199",
+          "length": "2",
+          "type": "C",
+          "notnull": "false",
+          "default": "KR",
+          "domain": "{KR,EN}",
+          "desc": "기타정보내용(전문언어구분코드          )"
+        },
+        {
+          "name": "CHNL_TYP_CD",
+          "offset": "201",
+          "length": "3",
+          "type": "C",
+          "notnull": "false",
+          "desc": "기타정보내용(채널유형코드              )"
+        },
+        {
+          "name": "MCI_NOD_NO",
+          "offset": "204",
+          "length": "2",
+          "type": "N",
+          "notnull": "false",
+          "desc": "기타정보내용(MCI노드번호               )"
+        },
+        {
+          "name": "SYS_RSV_STRN_CTS",
+          "offset": "206",
+          "length": "94",
+          "type": "C",
+          "notnull": "false",
+          "desc": "기타정보내용(시스템예비문자열내용      )"
+        }
+      ]
+    },
+    "body": {
+      "name": "Body",
+      "class": "com.mocomsys.message.Body",
+      "fieldCount": "1",
+      "offset": "512",
+      "length": "1",
+      "memoryFileUse": "false",
+      "bufferName": "DataBodyBuffer",
+      "defaultBufferSize": "1024",
+      "desc": "데이타 정의",
+      "field": {
+        "name": "DATA",
+        "offset": "0",
+        "length": "1",
+        "type": "C",
+        "notnull": "false",
+        "endofdata": "@@",
+        "desc": "데이타부"
+      }
+    }
+  }
+}
