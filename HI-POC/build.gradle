@@ -22,6 +22,12 @@ repositories {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
+	compile ('bea:webt55:')
+    compile ('jeus:webt55:')
+    compile ('tmax:webt55:')
+    compile ('com.tmax:webtutil:')
+    compile ('javax:webtutil:')
+    compile ('jeus:webtutil:')
 	compile ('com.ism:ism-all:')
     compile 'org.slf4j:slf4j-api:1.7.21'
 	compile ('commons-lang:commons-lang:2.3')
