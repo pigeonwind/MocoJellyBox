@@ -5,6 +5,10 @@ import java.util.Map;
 public class Message2 implements ByteDataMap{
 	Map<String,byte[]> header,body;
 	MessageDefiner definer;
+	public Message2(MessageDefiner definer) {
+		this.definer=definer;
+	}
+
 	@Override
 	public int size() {
 		// TODO Auto-generated method stub
