@@ -110,11 +110,13 @@ public class MessageTest {
 		System.out.printf("=================== %s START ===================\n", "setBodyDataTest");
 		// given
 		int expected = dummyMessage.getMessageFeildValueInteger("STND_TLG_LEN");
+
 		byte[] bodyData= dummyMessage.getMessageBodyData();
-		System.out.println(new String(bodyData));
+
+		System.out.println("========== start message build ==============");
 		Message msg = MessageBuilder.build();
-		
-		msg.setMessageBodyData(bodyData);
+
+		System.out.println(msg.toString());
 		// when
 		int actual =msg.getMessageFeildValueInteger("STND_TLG_LEN");
 		// then
