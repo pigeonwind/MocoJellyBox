@@ -3,15 +3,10 @@ package com.jerry.net;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
-import tmax.webt.WebtAttribute;
-import tmax.webt.WebtBuffer;
-import tmax.webt.WebtConnection;
-import tmax.webt.WebtRemoteService;
-import tmax.webt.io.WebtStringBuffer;
+import tmax.webt.*;
+import tmax.webt.io.*;
 
 public class WebTConnectionTest {
 
@@ -25,7 +20,6 @@ public class WebTConnectionTest {
 	
 	@Test
 	public void connectionTestName() throws Exception {
-		
 		System.out.printf("=================== %s START ===================\n", "connectionTestName");
 		// given
 		String remoteIp="10.10.1.127";
@@ -40,21 +34,13 @@ public class WebTConnectionTest {
 		WebtBuffer rcvBuffer;
 		
 		sndBuffer.setString(testData);
-		
 		rcvBuffer = service.tpcall(serviceName,sndBuffer,new WebtAttribute());
 		
-		
-		
 		System.out.printf("send data[%s] recv data[%s]\n",testData,rcvBuffer.getString());
-		
 		webtConnection.close();
-		
 		// when
 
 		// then
-
 		fail("Not yet implements");
 	}
-
-	
 }

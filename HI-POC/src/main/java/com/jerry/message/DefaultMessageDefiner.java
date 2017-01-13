@@ -3,6 +3,11 @@ package com.jerry.message;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -10,7 +15,9 @@ import org.json.simple.parser.*;
 import com.jerry.context.*;
 import com.jerry.util.*;
 
-public class DefultMessageDefiner implements MessageDefiner {
+import jeus.util.logging.SystemOutRecord;
+
+public class DefaultMessageDefiner implements MessageDefiner {
 	public static final String FEILD_ATTR_NAME_LENGTH = "length";
 	public static final String FEILD_ATTR_NAME_OFFSET = "offset";
 	public static final String FEILD_ATTR_NAME_DEFAULT = "default";
@@ -18,16 +25,41 @@ public class DefultMessageDefiner implements MessageDefiner {
 	public static final String FEILD_ATTR_NAME_DOMAIN = "domain";
 	public static final String BODY_ATTR_NAME_OFFSET = "message.body.offset";
 	public static final String BODY_ATTR_NAME_ENDOFDATA = "message.body.feild.endofdata";
+	private static final Object FEILD_ATTR_NAME_NAME = "name";
 	private Map<String, JSONObject> messageDefineMap;
-	private JSONObject messageObject,dataBodyObject;
+	private JSONObject messageObject,bodyFeild;
 	private JSONArray headerFeildArray;
-	public DefultMessageDefiner() throws FileNotFoundException, IOException, ParseException{
+	
+	Function<String,Map<String,Object>> getObject;
+	BiFunction<Map<String, Object>,String , String> getValue;
+	Function<String,Integer> getFeildLength;
+	Function<String, Integer> toInteger;
+	Function<String,Integer> getFeildOffset;
+	Function<String,String> getFeildDefault,getFeildDefaultCurrentTime;
+	Function<String,byte[]> whiteSpaceByteArraySupplier;
+	Predicate<String> isNotNull;
+	Predicate<String> isContainSysdateString;
+	public DefaultMessageDefiner() throws FileNotFoundException, IOException, ParseException{
 		this.messageDefineMap = new HashMap<String, JSONObject>();
 		messageDefineLookup();
 		initMessageDefineMap();
-//		System.out.println(messageDefineMap);
+		initFunction();
 	}
 	
+	private void initFunction() {
+		getObject= feildName-> messageDefineMap.get(feildName);
+		getValue = (map,attrName)->(String) map.get(attrName);
+		toInteger = intString-> Integer.parseInt(intString);
+		getFeildLength = getObject.andThen( map->getValue.apply(map, FEILD_ATTR_NAME_LENGTH) ).andThen(toInteger);
+		getFeildOffset = getObject.andThen( map->getValue.apply(map, FEILD_ATTR_NAME_OFFSET) ).andThen(toInteger);
+		getFeildDefault = getObject.andThen( map->(String) getValue.apply(map, FEILD_ATTR_NAME_DEFAULT));
+		getFeildDefaultCurrentTime = getObject.andThen( map->(String) getValue.apply(map, FEILD_ATTR_NAME_FORMAT)).andThen(TimeUtil::getCurrentTime);
+		
+		whiteSpaceByteArraySupplier = getFeildLength.andThen(byte[]::new).andThen(ByteArrayUtil::fillWhiteSpaceReturn);
+		isNotNull = (obj)->obj!=null;
+		isContainSysdateString = str->str.contains("sysdate");
+	}
+
 	/* (non-Javadoc)
 	 * @see com.jerry.message.MessageDefiner#getMessageDefineInt(java.lang.String)
 	 */
@@ -35,40 +67,33 @@ public class DefultMessageDefiner implements MessageDefiner {
 	public int getMessageDefineInt(String messageDefineName) {
 		return Integer.parseInt((String) JsonUtil.getValueByJsonPath(messageObject, messageDefineName));
 	}
-
 	/**
 	 * lookup message define
 	 */
 	private void messageDefineLookup() throws FileNotFoundException, IOException, ParseException {
-		headerFeildArray = null;
-		dataBodyObject = null;
 		{
-			// header
 			JSONParser parser = new JSONParser();
 			String messageDefinePath = ApplicationContext.loadContext().getValue("messageDefine.path");
 			messageObject = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(messageDefinePath)));
+			// header
 			headerFeildArray = (JSONArray) JsonUtil.getValueByJsonPath(messageObject, "message.header.field");
 			//body
-			dataBodyObject=  (JSONObject)JsonUtil.getValueByJsonPath(messageObject, "message.body");
+			bodyFeild =  (JSONObject) JsonUtil.getValueByJsonPath(messageObject, "message.body.field");
+			
 		}
 		System.out.println("---------------------");
 		System.out.println("messageDefineLookup()");
 		System.out.println("**** HEADER *****");
 		System.out.println(headerFeildArray);
 		System.out.println("**** DATA *****");
-		System.out.println(dataBodyObject);
+		System.out.println(bodyFeild);
 		System.out.println("---------------------");
 	}
 	
 	private void initMessageDefineMap() {
-		Iterator<?> headerFeilds = headerFeildArray.iterator();
-		JSONObject headerFeild;
-		while (headerFeilds.hasNext()) {
-			headerFeild = (JSONObject) headerFeilds.next();
-			messageDefineMap.put((String) headerFeild.get("name"), headerFeild);
-		}
-//		messageDefineMap.put(BODY_ATTR_NAME_OFFSET,(JSONObject) JsonUtil.getValueByJsonPath(messageObject, BODY_ATTR_NAME_OFFSET));
-//		messageDefineMap.put(BODY_ATTR_NAME_ENDOFDATA,(JSONObject) JsonUtil.getValueByJsonPath(messageObject, BODY_ATTR_NAME_ENDOFDATA));
+		Consumer<JSONObject> putAtMessageDefineMap =(headerFeildObject)->messageDefineMap.put((String) headerFeildObject.get(FEILD_ATTR_NAME_NAME), headerFeildObject);
+		headerFeildArray.forEach(putAtMessageDefineMap);
+		putAtMessageDefineMap.accept(bodyFeild);
 	}
 
 	/* (non-Javadoc)
@@ -112,16 +137,19 @@ public class DefultMessageDefiner implements MessageDefiner {
 	private boolean isValidLength(String feildName, byte[] value) {
 		return getFeildAttrValueInteager(feildName,"length")==value.length?true:false;
 	}
-
-
 	@Override
 	public Iterator<String> getFeildAttrNameIter(String feildName) {
 		return messageDefineMap.get(feildName).keySet().iterator();
 	}
-
 	@Override
-	public String getBodyFeildName() {
-		return null;
+	public byte[] getDefaultFeildValue(String name) {
+		byte[] container = whiteSpaceByteArraySupplier.apply(name);
+		String defaultString=getFeildDefault.apply(name);
+		if(isNotNull.test(defaultString)) {
+			System.arraycopy(isContainSysdateString.test(defaultString)?getFeildDefaultCurrentTime.apply(name).getBytes():defaultString.getBytes() , 0, container, 0, container.length);
+		};
+		return container;
 	}
+
 
 }

@@ -9,6 +9,6 @@ public interface MessageDefiner {
 	int getFeildAttrValueInteager(String feildName, String key);
 	boolean isValidFeild(String feildName, Object value);
 	Iterator<String> getFeildAttrNameIter(String feildName);
-	String getBodyFeildName();
+	byte[] getDefaultFeildValue(String name);
 
 }

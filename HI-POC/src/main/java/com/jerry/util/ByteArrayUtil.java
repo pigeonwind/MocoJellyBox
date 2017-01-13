@@ -11,6 +11,10 @@ public class ByteArrayUtil {
 	public static void fillWhiteSpace(byte[] byteArray) {
 		Arrays.fill(byteArray, (byte)' ');
 	}
+	public static byte[] fillWhiteSpaceReturn(byte[] byteArray) {
+		Arrays.fill(byteArray, (byte)' ');
+		return byteArray;
+	}
 	public static void fillZero(byte[] byteArray) {
 		Arrays.fill(byteArray, (byte)' ');
 	}
