@@ -110,13 +110,6 @@ public class Message {
 		return outputData;
 	}
 
-	public void setMessageFeildValue(String feildName, Object feildValue) {
-		if (messageDefiner.isValidFeild(feildName, feildValue)) {
-			dataMap.put(feildName, feildValue);
-		} else {
-			new RuntimeException(feildName.concat(" is not valid "));
-		}
-	}
 
 	public byte[] getMessageFeildValue(String feildName) {
 		byte[] result = (byte[]) dataMap.get(feildName);
@@ -124,7 +117,7 @@ public class Message {
 		return result;
 	}
 
-	public void setMessageBodyData(byte[] bodyDataBytes) {
+	public void setMessageBodyData(byte[] bodyDataBytes){
 
 	}
 
@@ -132,4 +125,6 @@ public class Message {
 		return null;
 	}
 
+	public void setMessageFeildValue(String eai_intf_id, byte[] bytes) {
+	}
 }

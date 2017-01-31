@@ -55,7 +55,7 @@ public class SyncClient implements MocomsysConstants {
 			sendMsg.setMessageFeildValue("STND_CRTN_SYS_NM", "jerry001".getBytes());
 			sendMsg.setMessageFeildValue("STND_TLG_SNO", makeGID());
 			sendMsg.setMessageFeildValue("STND_TLG_PGRS_NO", "00".getBytes());
-			sendMsg.setMessageFeildValue("TLG_IP", makeLocalIP());
+			sendMsg.setMessageFeildValue("TLG_IP", (byte[]) makeLocalIP());
 			sendMsg.setMessageFeildValue("ENV_INF_DST_CD", "D".getBytes());
 			sendMsg.setMessageFeildValue("XA_TR_DST_CD", "0".getBytes());
 			

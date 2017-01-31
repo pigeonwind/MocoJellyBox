@@ -7,7 +7,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
@@ -15,7 +14,6 @@ import org.json.simple.parser.*;
 import com.jerry.context.*;
 import com.jerry.util.*;
 
-import jeus.util.logging.SystemOutRecord;
 
 public class DefaultMessageDefiner implements MessageDefiner {
 	public static final String FEILD_ATTR_NAME_LENGTH = "length";
@@ -29,6 +27,7 @@ public class DefaultMessageDefiner implements MessageDefiner {
 	private Map<String, JSONObject> messageDefineMap;
 	private JSONObject messageObject,bodyFeild;
 	private JSONArray headerFeildArray;
+	private int defaultHeaderSize,defaultBodySize,bodyOffset;
 	
 	Function<String,Map<String,Object>> getObject;
 	BiFunction<Map<String, Object>,String , String> getValue;
@@ -45,7 +44,7 @@ public class DefaultMessageDefiner implements MessageDefiner {
 		initMessageDefineMap();
 		initFunction();
 	}
-	
+
 	private void initFunction() {
 		getObject= feildName-> messageDefineMap.get(feildName);
 		getValue = (map,attrName)->(String) map.get(attrName);
@@ -79,7 +78,16 @@ public class DefaultMessageDefiner implements MessageDefiner {
 			headerFeildArray = (JSONArray) JsonUtil.getValueByJsonPath(messageObject, "message.header.field");
 			//body
 			bodyFeild =  (JSONObject) JsonUtil.getValueByJsonPath(messageObject, "message.body.field");
-			
+
+			// default header size
+			System.out.println(JsonUtil.getValueByJsonPath(messageObject,"message.header.length"));
+//			defaultHeaderSize = toInteger.apply((String)J));
+			// default body size
+//			defaultBodySize = toInteger.apply((String)JsonUtil.getValueByJsonPath(messageObject,"message.body.length"));
+			// set body offset
+//			bodyOffset = toInteger.apply((String)JsonUtil.getValueByJsonPath(messageObject,"message.body.offset"));
+
+
 		}
 		System.out.println("---------------------");
 		System.out.println("messageDefineLookup()");
@@ -115,29 +123,6 @@ public class DefaultMessageDefiner implements MessageDefiner {
 	}
 
 	@Override
-	public boolean isValidFeild(String feildName, Object value) {
-		byte[] valueBytes = (byte[])value;
-		return isValidLength(feildName,valueBytes)&isValidDomain(feildName,valueBytes);
-	}
-
-	private boolean isValidDomain(String feildName, byte[] valueBytes) {
-		boolean result=false;
-		String valueString = new String(valueBytes);
-		String domainSetString=getFeildAttrValueString(feildName,FEILD_ATTR_NAME_DOMAIN);
-		String offsetString=getFeildAttrValueString(feildName,FEILD_ATTR_NAME_OFFSET);
-		if(domainSetString==null){ // domain attr is not exsist
-			result=true;
-		}else{
-			result=domainSetString.contains(valueString);
-		}
-		System.out.printf("%s[%s] | domain : %s | offset: %s | isValid : %s\n",feildName,valueString,domainSetString,offsetString,result?"true":"false");
-		return result;
-	}
-
-	private boolean isValidLength(String feildName, byte[] value) {
-		return getFeildAttrValueInteager(feildName,"length")==value.length?true:false;
-	}
-	@Override
 	public Iterator<String> getFeildAttrNameIter(String feildName) {
 		return messageDefineMap.get(feildName).keySet().iterator();
 	}
@@ -151,5 +136,18 @@ public class DefaultMessageDefiner implements MessageDefiner {
 		return container;
 	}
 
+	@Override
+	public int getDefaultHeaderSize() {
+		return defaultHeaderSize;
+	}
 
+	@Override
+	public int getDefaultBodySize() {
+		return defaultBodySize;
+	}
+
+	@Override
+	public int getBodyOffset() {
+		return bodyOffset;
+	}
 }

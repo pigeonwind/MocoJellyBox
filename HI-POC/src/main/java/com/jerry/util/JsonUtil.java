@@ -3,30 +3,34 @@ package com.jerry.util;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JsonUtil {
+		static Predicate<Object> isNull = obj -> obj == null;
+		static Predicate<Object> isJSONObject = obj -> obj instanceof JSONObject;
+		static Predicate<Object> isJSONArray = obj -> obj instanceof JSONArray;
+		static Predicate<Object> isString = obj -> obj instanceof String;
+		static BiFunction<JSONObject, String, Object> getValue = (sorceJSONObject, key) -> sorceJSONObject.get(key);
 
 	public static Object getValueByJsonPath(JSONObject jsonObject, String keyPath) {
-		return getJsonObject(jsonObject,Arrays.asList(keyPath.split("\\.")), new Filter<JSONObject>() {
-			@Override
-			public JSONObject isJSONObject(Object object) {
-				JSONObject result=null;;
-				if (object instanceof JSONObject) {
-					result = (JSONObject) object;
-				}
-				return result;
-			}
-		});
+		return getJsonObject(jsonObject,Arrays.asList(keyPath.split("\\.")), obj-> isJSONObject.test(obj)?(JSONObject)obj:null );
 	}
-	
-	private static Object getJsonObject(JSONObject jsonObject, List<String> list,Filter<JSONObject> filter) {
+
+	private static Object getJsonObject(JSONObject jsonObject, List<String> keyList,Filter<JSONObject> filter) {
 		JSONObject keyObj=null;
 		Object result=null;
-		for (String key : list) {
-			if(isNull(keyObj)){
+
+		//TODO: keyList의 key를 소모하면서 결과를 얻는 방법 찾기
+
+
+		for (String key : keyList) {
+			if(isNull.test(keyObj)){
 				keyObj=getJSONObject(jsonObject,key);
 			}else {
 				result = keyObj.get(key);
@@ -44,9 +48,6 @@ public class JsonUtil {
 		return (JSONObject) jsonObject.get(key);
 	}
 
-	private static boolean isNull(JSONObject keyObj) {
-		return keyObj==null;
-	}
 
 	public static Object getValueByJsonPath(JSONObject jsonObj, String queryPathWithArray, String retriveKey) {
 		String[] queryPathWithArrays = queryPathWithArray.split("\\?");
@@ -61,14 +62,17 @@ public class JsonUtil {
 		
 		for (String key : keys) {
 			System.out.println(key);
-			if(keyObj==null){
+			if(isNull.test(keyObj)){
 				keyObj=(JSONObject) jsonObj.get(key);
 			}else {
 				tempObj = keyObj.get(key);
-				if (tempObj instanceof JSONObject) {
+				if (isJSONObject.test(tempObj)) {
 					keyObj = (JSONObject) tempObj;
-				}else if (tempObj instanceof JSONArray){
+				}else if (isJSONArray.test(tempObj)){
 					JSONArray array= (JSONArray) tempObj;
+					//Todo : reduce 작업하기
+//					array.stream().reduce()
+
 					Iterator<?> jsonIter =array.iterator();
 					while (jsonIter.hasNext()) {
 						JSONObject jsonObject = (JSONObject) jsonIter.next();
@@ -81,10 +85,6 @@ public class JsonUtil {
 			}
 		}
 		return result;
-	}
-	
-	public static Object getValue(JSONObject jsonObject, String key){
-		return jsonObject.get(key);
 	}
 
 }

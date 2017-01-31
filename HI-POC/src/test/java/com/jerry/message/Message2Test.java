@@ -29,12 +29,19 @@ public class Message2Test {
 		Function<String,byte[]> getDefaultFeildValue=definer::getDefaultFeildValue;
 		Consumer<String> action =feildName-> defaultMessage.put(feildName, getDefaultFeildValue.apply(feildName));
 		definer.feildNameIterator().forEachRemaining(action);
+		byte[] messageBytes = new byte[512];
+
+
+
+
+
 		Message2 msg = new Message2(definer);
 		// given
 		Object expected=defaultMessage;
 		// when
+		Object actual=msg.getDefaultMessage();
+
 		// then
-		Object actual=null;
 		assertThat(actual, is(expected));
 	}
 }

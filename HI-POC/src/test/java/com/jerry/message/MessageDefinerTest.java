@@ -1,5 +1,6 @@
 package com.jerry.message;
 
+import static java.lang.System.out;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -16,6 +17,7 @@ public class MessageDefinerTest {
 
 	@Before
 	public void setUp() throws Exception {
+		definer = new DefaultMessageDefiner();
 	}
 
 	@After
@@ -25,8 +27,7 @@ public class MessageDefinerTest {
 	
 	@Test
 	public void getFieldValurOrDefaulttest_default() throws Exception {
-		System.out.printf("=================== %s START ===================\n", "getFieldValurOrDefaulttest");
-		definer = new DefaultMessageDefiner();
+		out.printf("=================== %s START ===================\n", "getFieldValurOrDefaulttest");
 		String feildName="TLG_LNGG_DST_CD";
 		// given
 		Object expected = getFeildValue(feildName);
@@ -37,8 +38,7 @@ public class MessageDefinerTest {
 	}
 	@Test
 	public void getFieldValurOrDefaulttest_nodefault() throws Exception {
-		System.out.printf("=================== %s START ===================\n", "getFieldValurOrDefaulttest_nodefault");
-		definer = new DefaultMessageDefiner();
+		out.printf("=================== %s START ===================\n", "getFieldValurOrDefaulttest_nodefault");
 		String feildName="RCV_SVC_CD";
 		// given
 		Object expected = getFeildValue(feildName);
@@ -49,8 +49,7 @@ public class MessageDefinerTest {
 	}
 	@Test
 	public void getFieldValurOrDefaulttest_default_date() throws Exception {
-		System.out.printf("=================== %s START ===================\n", "getFieldValurOrDefaulttest_default_date");
-		definer = new DefaultMessageDefiner();
+		out.printf("=================== %s START ===================\n", "getFieldValurOrDefaulttest_default_date");
 		String feildName="TLG_LNGG_DST_CD";
 		// given
 		Object expected = getFeildValue(feildName);
@@ -75,4 +74,16 @@ public class MessageDefinerTest {
 		return feildValue;
 	}
 
+	@Test
+	public void getDefaultHeaderSizeTest() throws Exception {
+		out.printf("========= %sTest() START =========\n", "getDefaultHeaderSize");
+		// given
+		Object expected = String.valueOf(512);
+
+		// when
+		Object actual = definer.getDefaultHeaderSize();
+		// then
+		assertThat(actual, is(expected));
+
+	}
 }

@@ -7,8 +7,12 @@ public interface MessageDefiner {
 	Iterator<String> feildNameIterator();
 	String getFeildAttrValueString(String feildName, String feildAttr);
 	int getFeildAttrValueInteager(String feildName, String key);
-	boolean isValidFeild(String feildName, Object value);
 	Iterator<String> getFeildAttrNameIter(String feildName);
 	byte[] getDefaultFeildValue(String name);
 
+	int getDefaultHeaderSize();
+
+	int getDefaultBodySize();
+
+	int getBodyOffset();
 }

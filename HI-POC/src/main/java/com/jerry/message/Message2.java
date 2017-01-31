@@ -7,6 +7,7 @@ public class Message2 implements ByteDataMap{
 	MessageDefiner definer;
 	public Message2(MessageDefiner definer) {
 		this.definer=definer;
+
 	}
 
 	@Override
@@ -26,4 +27,8 @@ public class Message2 implements ByteDataMap{
 		return null;
 	}
 
+	public Object getDefaultMessage() {
+		byte[] defaultMessageBytes=null;
+		return defaultMessageBytes;
+	}
 }
