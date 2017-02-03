@@ -14,6 +14,7 @@ public class JSONCollector implements Collector<Object, Object, Object> {
 	@Override
 	public Supplier<Object> supplier() {
 		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	/**

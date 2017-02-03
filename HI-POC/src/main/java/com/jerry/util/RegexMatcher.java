@@ -12,6 +12,7 @@ public class RegexMatcher {
 			int beginOffset = matcher.start();
 			int endOffset = matcher.end();
 			result = line.substring(beginOffset, endOffset);
+			
 		} else {
 			result = "null";
 		}

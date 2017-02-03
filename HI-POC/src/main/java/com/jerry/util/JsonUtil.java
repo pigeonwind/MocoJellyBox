@@ -66,6 +66,7 @@ public class JsonUtil {
 			}else if (isJSONArray.test(tempObj)){
 				result = toJSONArray.apply(tempObj).stream().filter(isMatched).map(obj->toJSONObject.apply(obj).get(retriveKey)).findFirst().get();
 			}
+			
 		}
 		return result;
 	}

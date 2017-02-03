@@ -43,6 +43,7 @@ public class JsonUtilTest {
 		String expected ="8";
 		String actual = (String) JsonUtil.getValueByJsonQueryPath(jsonObj, "message.header.field.[name=STND_TLG_LEN].length");
 		assertThat(actual, is(expected));
+		
 	}
 	@Test
 	public void getValueByJsonPathTest_String() throws Exception {
