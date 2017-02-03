@@ -18,9 +18,13 @@ import org.junit.Test;
 import com.jerry.context.ApplicationContext;
 
 public class JsonUtilTest {
-	JSONObject jsonObj;
+	private JSONParser parser;
+	private JSONObject jsonObj;
 	@Before
 	public void setUp() throws Exception {
+		String messageDefinePath = ApplicationContext.loadContext().getValue("messageDefine.path");
+		parser = new JSONParser();
+		jsonObj = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(messageDefinePath)));
 	}
 
 	@After
@@ -29,12 +33,26 @@ public class JsonUtilTest {
 	@Test
 	public final void getValueByJsonPathTest_query() throws FileNotFoundException, IOException, ParseException {
 		System.out.printf("=================== %s START ===================\n", "getValueByJsonPathTest_query");
-		String messageDefinePath = ApplicationContext.loadContext().getValue("messageDefine.path");
-		JSONParser parser = new JSONParser();
-		JSONObject jsonObj=(JSONObject) parser.parse(new InputStreamReader(new FileInputStream(messageDefinePath)));
-		
 		String expected ="8";
-		String actual = (String) JsonUtil.getValueByJsonPath(jsonObj, "message.header.field.name?STND_TLG_LEN","length");
+		String actual = (String) JsonUtil.getValueByJsonQueryPath(jsonObj, "message.header.field.name?STND_TLG_LEN","length");
+		assertThat(actual, is(expected));
+	}
+	@Test
+	public final void getValueByJsonPathTest_query2() throws FileNotFoundException, IOException, ParseException {
+		System.out.printf("=================== %s START ===================\n", "getValueByJsonPathTest_query2");
+		String expected ="8";
+		String actual = (String) JsonUtil.getValueByJsonQueryPath(jsonObj, "message.header.field.[name=STND_TLG_LEN].length");
+		assertThat(actual, is(expected));
+	}
+	@Test
+	public void getValueByJsonPathTest_String() throws Exception {
+		System.out.printf("=================== %s START ===================", "getValueByJsonPathTest");
+		// given
+		String path = "message.body.name";
+		Object expected="Body";
+		// when
+		Object actual=JsonUtil.getValueByJsonPath(jsonObj, path);
+		// then
 		assertThat(actual, is(expected));
 	}
 }
