@@ -1,106 +1,50 @@
 package com.jerry.util;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.*;
+import java.util.function.*;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.*;
 
 public class JsonUtil {
-		static Predicate<Object> isNull = obj -> obj == null;
-		static Predicate<Object> isJSONObject = obj -> obj instanceof JSONObject;
-		static Predicate<Object> isJSONArray = obj -> obj instanceof JSONArray;
-		static Predicate<Object> isString = obj -> obj instanceof String;
-		
-		static Function<Object,JSONObject> toJSONObject = obj-> isJSONObject.test(obj)?(JSONObject)obj:null ;
-		static Function<Object,JSONArray> toJSONArray = obj-> isJSONArray.test(obj)?(JSONArray)obj:null ;
-		
-		static BiFunction<JSONObject, String, Object> getValue = (sorceJSONObject, key) -> sorceJSONObject.get(key);
+	private static Predicate<Object> isJSONObject = obj -> obj instanceof JSONObject;
+	private static Predicate<Object> isJSONArray = obj -> obj instanceof JSONArray;
 
-	public static Object getValueByJsonPath(JSONObject jsonObject, String keyPath) {
-		
-		return getJsonObject(jsonObject,new LinkedList<>(Arrays.asList(keyPath.split("\\."))));
-	}
+	private static Function<Object, JSONObject> toJSONObject = obj -> isJSONObject.test(obj) ? (JSONObject) obj : null;
+	private static Function<Object, JSONArray> toJSONArray = obj -> isJSONArray.test(obj) ? (JSONArray) obj : null;
 
-	private static Object getJsonObject(JSONObject jsonObject, LinkedList<String> keyList) {
-		Object result=null;
-		JSONObject keyObj=(JSONObject) jsonObject.get(keyList.pop());;
-		//TODO: keyList의 key를 소모하면서 결과를 얻는 방법 찾기
-		
-		for (String key : keyList) {
-			result = keyObj.get(key);
-			keyObj = toJSONObject.apply(result);
-			System.out.printf("key[%s], keyObj [%s], result [%s]\n",key,keyObj,result);
-		}
-		System.out.println("******************");
-		System.out.println(result);
-		System.out.println("******************");
-		return result;
-	}
+	private static BiFunction<String, String, String> bf = RegexMatcher.REGEX_PARSE_OPERATOR.andThen(result -> result.replaceAll("\\[@", "").replace("]", ""));
+	private static BiFunction<String, String, String> getQueryConditionKeyFunc = bf.andThen(str -> str.split("=")[0]);
+	private static BiFunction<String, String, String> getQueryConditionValueFunc = bf.andThen(str -> str.split("=")[1]);
+	private static String regexPattern = "\\[(.*?)\\]";
 
-	public static Object getValueByJsonQueryPath(JSONObject jsonObj, String queryPathWithArray, String retriveKey) {
-		String[] queryPathWithArrays = queryPathWithArray.split("\\?");
-		
-		String[] keys =queryPathWithArrays[0].split("\\.");
+	public static Object getValueByJsonQueryPath(JSONObject jsonObj, String queryPathWithArray) {
+		String[] keys = queryPathWithArray.split("\\.");
 		LinkedList<String> keyList = new LinkedList<>(Arrays.asList(keys));
-		String queryFeild=keys[keys.length-1];
-		String queruCondition = queryPathWithArrays[1];
-		
-		JSONObject keyObj=null;
-		Object tempObj=null,result=null;
-		Predicate<JSONObject> isMatched = obj-> queruCondition.equals(obj.get(queryFeild));
-		
-		keyObj= (JSONObject) jsonObj.get(keyList.pop());
+		Object result = jsonObj.get(keyList.pop());
 		for (String key : keyList) {
-//			System.out.println(key);
-			tempObj = keyObj.get(key);
-			if (isJSONObject.test(tempObj)) {
-				keyObj = toJSONObject.apply(tempObj);
-			}else if (isJSONArray.test(tempObj)){
-				result = toJSONArray.apply(tempObj).stream().filter(isMatched).map(obj->toJSONObject.apply(obj).get(retriveKey)).findFirst().get();
-			}
-			
+			result = retrive(result, extractKey(key), queryPathWithArray);
 		}
 		return result;
 	}
-	public static Object getValueByJsonQueryPath(JSONObject jsonObj, String queryPathWithArray){
-		String regexPattern = "\\[(.*?)\\]";
-		
-		String queruCondition = RegexMatcher.REGEX_PARSE_OPERATOR.apply(queryPathWithArray, regexPattern);
-		
-		System.out.printf("queryPathWithArray[%s]\n",queryPathWithArray);
-		System.out.printf("queruCondition[%s]\n",queruCondition);
-		
-		String[] queryPathWithArrays = queryPathWithArray.split(regexPattern);
-		
-		String[] keys =queryPathWithArrays[0].split("\\.");
-		LinkedList<String> keyList = new LinkedList<>(Arrays.asList(keys));
-		String queryFeild=keys[keys.length-1];
-//		String queruCondition = queryPathWithArrays[1];
-		String retriveKey=null;
-		
-		JSONObject keyObj=null;
-		Object tempObj=null,result=null;
-		Predicate<JSONObject> isMatched = obj-> queruCondition.equals(obj.get(queryFeild));
-		keyObj= (JSONObject) jsonObj.get(keyList.pop());
-		
-		for (String key : keyList) {
-//			System.out.println(key);
-			tempObj = keyObj.get(key);
-			if (isJSONObject.test(tempObj)) {
-				keyObj = toJSONObject.apply(tempObj);
-			}else if (isJSONArray.test(tempObj)){
-				result = toJSONArray.apply(tempObj).stream().filter(isMatched).map(obj->toJSONObject.apply(obj).get(retriveKey)).findFirst().get();
-			}
+	
+	private static Object retrive(Object result, String key, String queryPathWithArray) {
+		String queruConditionKey,queruConditionValue;
+		if (isJSONObject.test(result)) {
+			result = toJSONObject.apply(result).get(key);// 증가
+		} else if (isJSONArray.test(result)) {
+			queruConditionKey = getQueryConditionKeyFunc.apply(queryPathWithArray, regexPattern);
+			queruConditionValue = getQueryConditionValueFunc.apply(queryPathWithArray, regexPattern);
+			result = (JSONObject) toJSONArray.apply(result).stream().filter(obj -> queruConditionValue.equals(((JSONObject) obj).get(queruConditionKey))).findFirst().get();
 		}
 		return result;
+	}
+
+	private static String extractKey(String key) {
+		Predicate<String> isQueryKey = str -> str.contains("[@");
+		if (isQueryKey.test(key)) {
+			key = getQueryConditionValueFunc.apply(key, regexPattern);
+		}
+		return key;
 	}
 
 }

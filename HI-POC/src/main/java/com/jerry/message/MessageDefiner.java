@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public interface MessageDefiner {
 	int getMessageDefineInt(String messageDefineName);
-	Iterator<String> feildNameIterator();
+	Iterator<String> getFeildNameIterator();
 	String getFeildAttrValueString(String feildName, String feildAttr);
 	int getFeildAttrValueInteager(String feildName, String key);
 	Iterator<String> getFeildAttrNameIter(String feildName);

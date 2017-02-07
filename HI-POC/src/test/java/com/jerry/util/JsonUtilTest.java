@@ -31,19 +31,11 @@ public class JsonUtilTest {
 	public void tearDown() throws Exception {
 	}
 	@Test
-	public final void getValueByJsonPathTest_query() throws FileNotFoundException, IOException, ParseException {
-		System.out.printf("=================== %s START ===================\n", "getValueByJsonPathTest_query");
-		String expected ="8";
-		String actual = (String) JsonUtil.getValueByJsonQueryPath(jsonObj, "message.header.field.name?STND_TLG_LEN","length");
-		assertThat(actual, is(expected));
-	}
-	@Test
 	public final void getValueByJsonPathTest_query2() throws FileNotFoundException, IOException, ParseException {
 		System.out.printf("=================== %s START ===================\n", "getValueByJsonPathTest_query2");
 		String expected ="8";
-		String actual = (String) JsonUtil.getValueByJsonQueryPath(jsonObj, "message.header.field.[name=STND_TLG_LEN].length");
+		String actual = (String) JsonUtil.getValueByJsonQueryPath(jsonObj, "message.header.field.[@name=STND_TLG_LEN].length");
 		assertThat(actual, is(expected));
-		
 	}
 	@Test
 	public void getValueByJsonPathTest_String() throws Exception {
@@ -52,7 +44,7 @@ public class JsonUtilTest {
 		String path = "message.body.name";
 		Object expected="Body";
 		// when
-		Object actual=JsonUtil.getValueByJsonPath(jsonObj, path);
+		Object actual=JsonUtil.getValueByJsonQueryPath(jsonObj, path);
 		// then
 		assertThat(actual, is(expected));
 	}

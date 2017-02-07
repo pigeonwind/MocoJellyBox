@@ -64,7 +64,7 @@ public class DefaultMessageDefiner implements MessageDefiner {
 	 */
 	@Override
 	public int getMessageDefineInt(String messageDefineName) {
-		return Integer.parseInt((String) JsonUtil.getValueByJsonPath(messageObject, messageDefineName));
+		return Integer.parseInt((String) JsonUtil.getValueByJsonQueryPath(messageObject, messageDefineName));
 	}
 	/**
 	 * lookup message define
@@ -75,13 +75,12 @@ public class DefaultMessageDefiner implements MessageDefiner {
 			String messageDefinePath = ApplicationContext.loadContext().getValue("messageDefine.path");
 			messageObject = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(messageDefinePath)));
 			// header
-			headerFeildArray = (JSONArray) JsonUtil.getValueByJsonPath(messageObject, "message.header.field");
+			headerFeildArray = (JSONArray) JsonUtil.getValueByJsonQueryPath(messageObject, "message.header.field");
 			//body
-			bodyFeild =  (JSONObject) JsonUtil.getValueByJsonPath(messageObject, "message.body.field");
+			bodyFeild =  (JSONObject) JsonUtil.getValueByJsonQueryPath(messageObject, "message.body.field");
 
 			// default header size
-			System.out.println(JsonUtil.getValueByJsonPath(messageObject,"message.header.length"));
-//			defaultHeaderSize = toInteger.apply((String)J));
+			System.out.println(JsonUtil.getValueByJsonQueryPath(messageObject,"message.header.length"));
 			// default body size
 //			defaultBodySize = toInteger.apply((String)JsonUtil.getValueByJsonPath(messageObject,"message.body.length"));
 			// set body offset
@@ -108,7 +107,7 @@ public class DefaultMessageDefiner implements MessageDefiner {
 	 * @see com.jerry.message.MessageDefiner#keyIterator()
 	 */
 	@Override
-	public Iterator<String> feildNameIterator() {
+	public Iterator<String> getFeildNameIterator() {
 		return messageDefineMap.keySet().iterator();
 	}
 

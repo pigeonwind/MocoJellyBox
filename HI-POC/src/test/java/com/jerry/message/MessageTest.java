@@ -45,7 +45,7 @@ public class MessageTest {
 		boolean expected=true;
 		String feildAttrName,feildAttrValue;
 		Iterator<String> feildNameIterator,feildAttrIter;
-		feildNameIterator=definer.feildNameIterator();
+		feildNameIterator=definer.getFeildNameIterator();
 		while (feildNameIterator.hasNext()) {
 			String feildName = (String) feildNameIterator.next();
 			feildAttrIter = definer.getFeildAttrNameIter(feildName);
@@ -84,7 +84,7 @@ public class MessageTest {
 		
 		System.out.printf("=================== %s START ===================\n", "builDefaultMessageHeaderTest");
 		Message actualMessage = new Message(definer);
-		Iterator<String> feildNameIter = definer.feildNameIterator();
+		Iterator<String> feildNameIter = definer.getFeildNameIterator();
 		String feildName;
 		Object expectObj,actualObj;
 		while(feildNameIter.hasNext()){

@@ -43,7 +43,7 @@ public class Message {
 
 	public Message parse(byte[] inputData) throws FileNotFoundException, IOException {
 		setIntPutData(inputData);
-		messageDefiner.feildNameIterator().forEachRemaining(this::setInputMessageHeader);
+		messageDefiner.getFeildNameIterator().forEachRemaining(this::setInputMessageHeader);
 		setOutputData(inputData);
 		return this;
 	}
@@ -65,7 +65,7 @@ public class Message {
 	}
 
 	public Message makeDefaultMessage() {
-		messageDefiner.feildNameIterator().forEachRemaining(name -> {
+		messageDefiner.getFeildNameIterator().forEachRemaining(name -> {
 			setDefaultMessageAtDefaultMessageHeaderBytes(name);
 			putDefaultMessageAtDataMap(name);
 		});

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -25,15 +26,11 @@ public class Message2Test {
 	public void getDefaultMessageTest() throws Exception {
 		System.out.printf("=================== %s START ===================\n", "getDefaultMessageTest");
 		MessageDefiner definer= new DefaultMessageDefiner();
-		HashMap<String, byte[]> defaultMessage = new HashMap<>();
+		LinkedHashMap<String, Object> defaultMessage = new LinkedHashMap<>();
 		Function<String,byte[]> getDefaultFeildValue=definer::getDefaultFeildValue;
-		Consumer<String> action =feildName-> defaultMessage.put(feildName, getDefaultFeildValue.apply(feildName));
-		definer.feildNameIterator().forEachRemaining(action);
+		Consumer<String> defaultMessagePutAction =feildName-> defaultMessage.put(feildName, getDefaultFeildValue.andThen(String::new).apply(feildName));
+		definer.getFeildNameIterator().forEachRemaining(defaultMessagePutAction);
 		byte[] messageBytes = new byte[512];
-
-
-
-
 
 		Message2 msg = new Message2(definer);
 		// given
